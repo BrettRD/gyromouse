@@ -3,6 +3,7 @@
 
 #include "keyscan.h"
 #include "pcf8574_wire.h"
+#include "trackball.hpp"
 #include <MPU9250_asukiaaa.h>
 #include "ble_gyromouse.h"
 
@@ -12,6 +13,9 @@
 
 MPU9250_asukiaaa mpu;
 BleGyroMouse bleMouse;
+
+i2c_shim tb_i2c_shim((void*) &Wire);
+Trackball trackball(&tb_i2c_shim);
 // context pointer to feed the keyscan system
 wire_cxt pcf_cxt = {&Wire, 0x20};
 
@@ -41,13 +45,15 @@ uint32_t gyro_timer = 0;
 float Gxyz[3];  //gyro raw data
 uint8_t buf[mouse_report_len];  // buffer to carry the mouse BLE data
 
+uint8_t tb_r,tb_g,tb_b,tb_w;  // trackball colours
+
 void print_table_cb(const char* str){
   Serial.print(str);
 }
 
 void setup()
 {
-  Wire.begin(4,15);
+  Wire.begin(4,15); // SDA, SCL
 
   Serial.begin(38400);
   delay(200);
@@ -59,18 +65,24 @@ void setup()
 
   pinMode(5, INPUT_PULLUP);  //keypad interrupt pin
 
-
+  
   mpu.setWire(&Wire);
   //mpu.beginAccel();
   mpu.beginGyro(GYRO_FULL_SCALE_2000_DPS);
+
+  keyscan(&pcf_cxt, &chord);
+
+  if(trackball.init()){
+    Serial.println("Trackball OK");
+  } else {
+    Serial.println("Trackball Failed");
+  }
+
 
   Serial.println("Starting BLE...");
   bleMouse.begin();
   delay(1000);
   Serial.println("Start");
-
-
-  keyscan(&pcf_cxt, &chord);
 
 
 }
@@ -89,6 +101,17 @@ void loop()
   Gxyz[1]=mpu.gyroY();
   Gxyz[2]=mpu.gyroZ();
 
+
+  Trackball::State tb_state = trackball.read();
+  tb_r += tb_state.up;
+  tb_r -= tb_state.down;
+  tb_g += tb_state.left;
+  tb_g -= tb_state.right;
+  tb_w = tb_state.sw_pressed ? 255 : 0;
+  trackball.set_rgbw(tb_r, tb_g, tb_b, tb_w);
+
+  int8_t tb_x = tb_state.right - tb_state.left;
+  int8_t tb_y = tb_state.up - tb_state.down;
 
 
   // the keypad will set the int pin on pin5 from chord 0,
@@ -144,9 +167,10 @@ void loop()
 
     if(
       ((old_chord^chord) & mouse_mask) ||   // if we need to click
-      (abs(mouse_x_accu) > 1.0) ||          // we need to move in X
-      (abs(mouse_y_accu) > 1.0)             // we need to move in Y
-                                            // we need to scroll the wheel
+      (abs(mouse_x_accu) >= 1.0) ||          // we need to move in X
+      (abs(mouse_y_accu) >= 1.0) ||          // we need to move in Y
+      (abs(tb_x) > 0) ||                    // we need to scroll the wheel
+      (abs(tb_y) > 0)                       // we need to scroll the wheel
     ){
       // write the gyro accumulator (float) to the right number format
       int16_t x_motion = mouse_x_accu;
@@ -172,7 +196,7 @@ void loop()
         pack_mouse_report(
           mouse_buttons(chord),   // convert physical buttons to mouse buttons
           x_motion, y_motion,
-          0, 0,
+          tb_y, tb_x,
           buf
         )
       );
