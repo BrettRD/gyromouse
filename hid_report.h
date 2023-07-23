@@ -21,6 +21,10 @@ const size_t mouse_report_len = 7;
 const int32_t mouse_trans_max = 2047;
 const int32_t mouse_wheel_max = 127;
 
+
+// Packs the mouse HID report.
+// Make sure to update the HID table if you change this
+// note that x and y are only 12b integers
 uint8_t* pack_mouse_report(
   uint16_t buttons,
   int16_t x, int16_t y,

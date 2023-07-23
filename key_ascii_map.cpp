@@ -10,9 +10,9 @@ const uint8_t key_ascii_map[128] =
   0x00,             // ENQ
   0x00,             // ACK
   0x00,             // BEL
-  0x2a,             // BS 	Backspace
+  0x2a,             // BS   Backspace
   0x2b,             // TAB  Tab
-  0x28,             // LF  	Enter
+  0x28,             // LF   Enter
   0x00,             // VT
   0x00,             // FF
   0x00,             // CR

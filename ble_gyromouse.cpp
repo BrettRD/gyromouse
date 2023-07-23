@@ -32,6 +32,9 @@ void BleGyroMouse::send_mouse_report(uint8_t* buf){
   //this->inputMouse->notify();
   this->inputMouse->notify(buf, mouse_report_len);
   delay(2); // XXX  turn this into a queue and task
+  // XXX buf is either keyboard_report_len or
+  //     mouse_report_len, both are 7 bytes
+
 }
 
 

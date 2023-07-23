@@ -10,6 +10,9 @@
 #include "chordtools.h"
 #include "chordmap.h"
 
+const int key_scan_int_pin = 13;
+const uint8_t key_scan_i2c_addr = 0x38; //  PCF8574A
+// const uint8_t key_scan_i2c_addr = 0x20; //  PCF8574 stripboard,
 
 MPU9250_asukiaaa mpu;
 BleGyroMouse bleMouse;

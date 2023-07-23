@@ -345,9 +345,11 @@ const chordmacro_t macro_map[] = {
 
 
 
+  // not reachable, chord collision with Space earlier in table
   make_macro( CHORD(M,O,O,O),
     (macro_table_entry_t[]){
-      str_macro("Gives Me the screaming Heeby Jeebies")}),
+      str_macro("Gives Me the Screaming Heeby Jeebies")}),
+
 
   make_macro( CHORD(O,O,M,E), 
     konami_code),

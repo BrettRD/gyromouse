@@ -14,7 +14,7 @@ USAGE_PAGE(1),      0x01,                    // Usage Page (Generic Desktop)    
 USAGE(1),           0x06,                    // Usage (Keyboard)                    2
 COLLECTION(1),      0x01,                    // Collection (Application)            4
 
-REPORT_ID(1),       KEYBOARD_KEYS_ID,        //  Report ID (KEYBOARD_KEYS_ID)                      6
+REPORT_ID(1),       KEYBOARD_KEYS_ID,        //  Report ID (KEYBOARD_KEYS_ID)       6
 // modifier keys
 REPORT_COUNT(1),    0x08,                    //  Report Count (8)                   8
 REPORT_SIZE(1),     0x01,                    //  Report Size (1)                    10
@@ -34,7 +34,7 @@ USAGE_MINIMUM(1),   0x00,                    //  Usage Minimum (0)              
 USAGE_MAXIMUM(2),   0xff, 0x00,              //  Usage Maximum (255)                37
 HIDINPUT(1),        0x00,                    //  Input (Data,Arr,Abs)               40
 // keyboard lights
-REPORT_ID(1),       KEYBOARD_LIGHTS_ID,      //  Report ID (KEYBOARD_LIGHTS_ID)                     42
+REPORT_ID(1),       KEYBOARD_LIGHTS_ID,      //  Report ID (KEYBOARD_LIGHTS_ID)     42
 USAGE_PAGE(1),      0x08,                    //  Usage Page (LEDs)                  44
 REPORT_COUNT(1),    0x05,                    //  Report Count (5)                   46
 REPORT_SIZE(1),     0x01,                    //  Report Size (1)                    48
@@ -53,7 +53,7 @@ END_COLLECTION(0),                           // End Collection                  
 USAGE_PAGE(1),      0x0C,                    // USAGE_PAGE (Consumer)
 USAGE(1),           0x01,                    // USAGE (Consumer Control)
 COLLECTION(1),      0x01,                    // COLLECTION (Application)
-REPORT_ID(1),       MEDIA_ID,           //   REPORT_ID (MEDIA_KEYS_IDj)
+REPORT_ID(1),       MEDIA_ID,                //   REPORT_ID (MEDIA_KEYS_ID)
 USAGE_PAGE(1),      0x0C,                    //   USAGE_PAGE (Consumer)
 LOGICAL_MINIMUM(1), 0x00,                    //   LOGICAL_MINIMUM (0)
 LOGICAL_MAXIMUM(1), 0x01,                    //   LOGICAL_MAXIMUM (1)
@@ -82,7 +82,7 @@ END_COLLECTION(0),                            // END_COLLECTION
 USAGE_PAGE(1),      0x01,                    // Usage Page (Generic Desktop)        67
 USAGE(1),           0x02,                    // Usage (Mouse)                       69
 COLLECTION(1),      0x01,                    // Collection (Application)            71
-REPORT_ID(1),       MOUSE_ID,                //  Report ID (MOUSE_ID)                      73
+REPORT_ID(1),       MOUSE_ID,                //  Report ID (MOUSE_ID)               73
 USAGE(1),           0x01,                    //  Usage (Pointer)                    75
 COLLECTION(1),      0x00,                    //  Collection (Physical)              77
 USAGE_PAGE(1),      0x09,                    //   Usage Page (Button)               79
