@@ -14,11 +14,22 @@
 
 const int n_cols = 3;
 const int n_rows = 5;
-const int col_pins[n_cols] = {7,4,1};
-const int row_pins[n_rows] = {6,5,2,3,0};
+//proto 0 scan order: 12CB453A
+const int col_pins[n_cols] = {7,3,2};
+const int row_pins[n_rows] = {0,1,6,4,5};
+
+
+
+// stripboard scan order: 5C34B21A
+//const int col_pins[n_cols] = {7,4,1};
+//const int row_pins[n_rows] = {6,5,2,3,0};
+
+
 
 //const int n_cols = 5;
 //const int n_rows = 3;
+//const int col_pins[n_cols] = {0,1,6,4,5};
+//const int row_pins[n_rows] = {7,3,2};
 //const int col_pins[n_cols] = {6,5,2,3,0};
 //const int row_pins[n_rows] = {7,4,1};
 
