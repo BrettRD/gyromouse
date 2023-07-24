@@ -62,6 +62,9 @@ No issues, the I2C stubs will need adapting for a toolchain change.
 ## Keyboard Layers
 optimised keymaps for specific data entry tasks
 
+## Non-Chording Layer
+Arrow keys/numpad with OS-side auto-repeat
+
 ## Internal notes
 Text entry to internal storage. 
 interpret keyscan into ascii so you don't accidentally rubber-ducky yourself
@@ -99,11 +102,16 @@ Convert whole project to ESP-IDF
 ### Main
 re-combine setup and loop, establish rtos tasks
 
-### delay
-Implement a message queue between application code and BLE message handlers with re
+### delay / micros
+Implement a message queue between application code and BLE message handlers with a rate limit on messages
+
+remove calls to micros, use native timing system
 
 ### Serial
 remove calls to serial, convert to a macro-ed debug call
+
+### DigitalRead, pinMode
+remove digitalRead, use native GPIO accessors
 
 ### IMU
 Wire IMU onto SPI port
@@ -128,3 +136,6 @@ XXX Does not state S3 support
 ## Sleep
 Devise an entry into a low power mode
 
+## BLE Mouse separate move and scroll endpoints?
+The trackpad and gyro are not synchronised inputs.
+Can they be sent to different endpoints in HID?
