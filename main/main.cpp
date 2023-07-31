@@ -24,7 +24,8 @@ LCD_TASK_STACK=30000
 LCD_TASK_TASK_PRIO=5
 
 
-const int key_scan_int_pin = 13;
+#define KEYBOARD_INT_PIN CONFIG_GPIO_INPUT_13
+#define KEYBOARD_PIN_MASK (1ULL<<KEYBOARD_INT_PIN)
 const uint8_t key_scan_i2c_addr = 0x38; //  PCF8574A
 // const uint8_t key_scan_i2c_addr = 0x20; //  PCF8574 stripboard,
 
@@ -66,7 +67,6 @@ void print_table_cb(const char* str){
 
 void imu_task(void * arg)
 {
-  //rcl_node_t * node = (rcl_node_t *) arg;
 
   // compensate non-uniform sampling of the gyro
   uint32_t gyro_timer = 0;
@@ -163,8 +163,6 @@ void imu_task(void * arg)
 
 void keyscan_task(void * arg)
 {
-  //rcl_node_t * node = (rcl_node_t *) arg;
-
 
   // remember the last chord release time so we can debounce/inhibit
   uint32_t chord_timer = 0;
@@ -178,8 +176,13 @@ void keyscan_task(void * arg)
   // context pointer to feed the keyscan system
   wire_cxt pcf_cxt = {&Wire, key_scan_i2c_addr};
 
+  gpio_config_t io_conf = {};
+  //io_conf.intr_type = GPIO_INTR_POSEDGE;  //interrupt of rising edge
+  io_conf.pin_bit_mask = KEYBOARD_PIN_MASK;  //bit mask of the pins
+  io_conf.mode = GPIO_MODE_INPUT;           //set as input mode
+  io_conf.pull_up_en = 1;                   //enable pull-up mode
+  gpio_config(&io_conf);
 
-  pinMode(key_scan_int_pin, INPUT_PULLUP);  //keypad interrupt pin
 
   keyscan(&pcf_cxt, &chord);
 
@@ -195,7 +198,7 @@ void keyscan_task(void * arg)
     // otherwise, if the interrupt line is triggered there's a new chord state to read
     if(
       !keyb_int_valid(chord) ||
-      (LOW == digitalRead(key_scan_int_pin))
+      (0 == gpio_get_level(KEYBOARD_INT_PIN)) // XXX check me
     ){
       keyscan(&pcf_cxt, &chord);
       // report non-zero chords
@@ -243,9 +246,10 @@ void keyscan_task(void * arg)
 
 void ble_task(void * arg)
 {
-  //rcl_node_t * node = (rcl_node_t *) arg;
-  //MPU9250_asukiaaa mpu;
   BleGyroMouse bleMouse;
+  // XXX create an event queue at main scope
+  //     implement rate limiting by waiting for the queue to become available
+  //evt_queue = xQueueCreate(2, mouse_report_len);
 
   bleMouse.begin();
 
@@ -253,7 +257,7 @@ void ble_task(void * arg)
     // read the message queue
     // send BLE reports
     // rate limit
-    // XXX sleep
+    vTaskDelay(10/portTICK_PERIOD_MS);
   }
 
 }
@@ -262,13 +266,11 @@ void ble_task(void * arg)
 // XXX LVGL start and spin
 void lcd_task(void * arg)
 {
-  //rcl_node_t * node = (rcl_node_t *) arg;
-
 
   while(true){
     // read trackpad
     // queue scroll messages
-    // XXX sleep
+    vTaskDelay(10/portTICK_PERIOD_MS);
   }
 }
 
@@ -284,11 +286,11 @@ void app_main(void)
   Wire.begin(9,10); // SDA, SCL // proto0
 
   //Serial.begin(38400);
-  delay(2000);
-  print_macro_table(macro_map, macro_map_size, print_table_cb);
+  //delay(2000);
+  //print_macro_table(macro_map, macro_map_size, print_table_cb);
 
   // diagnostics, check the sensors exist
-  scan_i2c();
+  //scan_i2c();
 
 
   // start the application tasks

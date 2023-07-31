@@ -33,28 +33,20 @@ Certain chords are subsets of other chords, dwell allows you to release parts of
 
 # Issues:
 
-## Trackball
-The Pimoroni Trackball loses more than half of the user inputs to mechanical crunchyness. The on-board firmware has fatal issues with up-time and low-power modes.
-The Pimoroni trackball is removed in favour of the capacitive touch layer on a TFT LCD
-
 ## LCD
-LVGL uses TFT_eSPI as driver
-TFT_eSPI does not build for arduino without lib tampering because arduino's build chain sucks (doesn't pass user defines to lib headers)
+Needs a whole UI system
 
 ## Capacitive Touch Input
-Not yet implemented, likely strongly coupled to choice of LCD lib
+strongly coupled to LCD lib
 
 ## Bluetooth
-NimBLE was not obviously functional for ESP32 when I first approached it, so the project got built for arduino.
+NimBLE for esp32 cpp needs testing with the existing calls.
 
 ## IMU
-MPU9250 drivers are not generally high quality, and not sensibly available for esp32, (I've written three IMU drivers, and I'm sick of it.)
-
-## Toolchain
-The major open toolchains for MCUs struggle to get quality contributions, and end up with a very high API churn.
+Needs a MPU9250 driver, and there are so many shit ones it's easier to write a new one than find a good one
 
 ## Key matrix
-No issues, the I2C stubs will need adapting for a toolchain change.
+I2C stubs need adapting esp-idf.
 
 
 
@@ -100,31 +92,39 @@ Convert whole project to ESP-IDF
 ## Remove Arduino contamination
 
 ### Main
-re-combine setup and loop, establish rtos tasks
+re-combine setup and loop, establish rtos tasks - done
 
 ### delay / micros
 Implement a message queue between application code and BLE message handlers with a rate limit on messages
 
-remove calls to micros, use native timing system
+remove calls to micros, use native timing system - done
 
 ### Serial
 remove calls to serial, convert to a macro-ed debug call
 
+no existing print calls
+
 ### DigitalRead, pinMode
-remove digitalRead, use native GPIO accessors
+remove digitalRead, use native GPIO accessors - done (check)
 
 ### IMU
 Wire IMU onto SPI port
 
 ### Peripheral monitoring
-Split IMU and keyscan monitoring out to separate tasks
+Split IMU and keyscan monitoring out to separate tasks - done
 
+### Wire lib for I2C
+Need to configure I2C
 
 ## Bluetooth:
 https://github.com/h2zero/esp-nimble-cpp
 
+cloned, needs config
+
 ## LCD
 https://docs.lvgl.io/master/get-started/platforms/espressif.html#using-lvgl-esp32-drivers-in-esp-idf-project
+
+cloned, needs config
 
 ## IMU
 Split register map and accessors to separate files

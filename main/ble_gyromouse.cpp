@@ -25,13 +25,15 @@ void BleGyroMouse::send_keyboard_report(uint8_t* buf){
   //this->inputKeyboard->setValue(buf, keyboard_report_len);
   //this->inputKeyboard->notify();
   this->inputKeyboard->notify(buf, keyboard_report_len);
-  delay(2); // XXX  turn this into a queue and task
+  // XXX  turn this into a queue and task
+  vTaskDelay(2/portTICK_PERIOD_MS); // Delay between loops to reset watchdog timer
 }
 void BleGyroMouse::send_mouse_report(uint8_t* buf){
   //this->inputMouse->setValue(buf, mouse_report_len);
   //this->inputMouse->notify();
   this->inputMouse->notify(buf, mouse_report_len);
-  delay(2); // XXX  turn this into a queue and task
+  // XXX  turn this into a queue and task
+  vTaskDelay(2/portTICK_PERIOD_MS);
   // XXX buf is either keyboard_report_len or
   //     mouse_report_len, both are 7 bytes
 
