@@ -1,0 +1,7 @@
+menu "MPU9250"
+
+config AUTO_CONFIG_ADDR
+    bool "configure mpu9250 addr at run time"
+    default false
+    
+endmenu
