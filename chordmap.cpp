@@ -24,7 +24,7 @@ const macro_table_entry_t konami_code[] = {
 // mouse actions are considered part of the keymap
 uint8_t mouse_buttons(chord_t chord){
   return  ((chord & CHORD_MOUSE_L) ? MC_L : 0) |
-          ((chord & CHORD_MOUSE_M) ? MC_M : 0) |
+        //((chord & CHORD_MOUSE_M) ? MC_M : 0) |  // using trackball for middle mouse
           ((chord & CHORD_MOUSE_R) ? MC_R : 0);
 }
 

@@ -38,7 +38,9 @@ bool keyb_int_valid(chord_t chord){
   for(int row=0; row<n_rows; row++){
     chord_t mask = ((1<<n_cols)-1) << (row*n_cols);
     chord_t row_state = mask & chord;
-    if( __builtin_popcount(row_state) > 1){
+    // popcount > 1 polls for release of two buttons on the same row.
+    // popcount >= 1 polls for new presses on the same row
+    if( __builtin_popcount(row_state) >= 1){
       return false;
     }
   }

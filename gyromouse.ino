@@ -44,7 +44,7 @@ float gyro_vectors[9] = {
 chord_t chord = 0;
 // remember the chord before that so we can see which chord was released
 chord_t old_chord = 0;
-
+bool old_tb_btn = false;
 
 // remember the last chord release time so we can debounce/inhibit
 uint32_t chord_timer = 0;
@@ -60,7 +60,7 @@ uint8_t buf[mouse_report_len];  // buffer to carry the mouse BLE data
 uint8_t tb_r,tb_g,tb_b,tb_w;  // trackball colours
 
 void print_table_cb(const char* str){
-  //Serial.print(str);
+  Serial.print(str);
 }
 
 void setup()
@@ -69,7 +69,7 @@ void setup()
   // Wire.begin(4,15); // SDA, SCL //stripboard
   Wire.begin(9,10); // SDA, SCL // proto0
 
-  //Serial.begin(38400);
+  Serial.begin(38400);
   delay(2000);
   print_macro_table(macro_map, macro_map_size, print_table_cb);
 
@@ -87,9 +87,9 @@ void setup()
   keyscan(&pcf_cxt, &chord);
 
   if(trackball.init()){
-    //Serial.println("Trackball OK");
+    Serial.println("Trackball OK");
   } else {
-    //Serial.println("Trackball Failed");
+    Serial.println("Trackball Failed");
   }
 
 
@@ -175,7 +175,7 @@ void loop()
     // an arbitrary reserved chord used in direct-entry mode unmasks the gyro
 
     
-    if(chord == CHORD(E,O,E,M)){
+    if(chord & CHORD_MOUSE_M){  // using the middle button to activate the gyromouse
       // mouse is activated, integrate the angle
 
       float raw_rates[3] = {
@@ -194,14 +194,16 @@ void loop()
       mouse_y_accu += dps_curve(aligned_rates[1], gyro_dt);
       
     }
-
+    bool tb_btn = tb_state.sw_pressed;
     if(
       ((old_chord^chord) & mouse_mask) ||   // if we need to click
+      (old_tb_btn != tb_btn) ||
       (abs(mouse_x_accu) >= 1.0) ||          // we need to move in X
       (abs(mouse_y_accu) >= 1.0) ||          // we need to move in Y
       (abs(tb_x) > 0) ||                    // we need to scroll the wheel
       (abs(tb_y) > 0)                       // we need to scroll the wheel
     ){
+      old_tb_btn = tb_btn;
       // write the gyro accumulator (float) to the right number format
       int16_t x_motion = mouse_x_accu;
       int16_t y_motion = mouse_y_accu;
@@ -219,12 +221,17 @@ void loop()
         y_motion = -mouse_trans_max;
       }
 
-      // clamp the wheel values
+      // clamp the wheel values  XXX ?
+
+
+      uint8_t buttons = ((chord & CHORD_MOUSE_L) ? MC_R : 0) |
+                        (tb_btn ? MC_M : 0) |
+                        ((chord & CHORD_MOUSE_R) ? MC_L : 0);
 
       // we have the information we need to send the report
       bleMouse.send_mouse_report(
         pack_mouse_report(
-          mouse_buttons(chord),   // convert physical buttons to mouse buttons
+          buttons,   // convert physical buttons to mouse buttons
           x_motion, y_motion,
           tb_y, tb_x,
           buf
@@ -243,7 +250,7 @@ void loop()
   // update the old_chord state so we can remember what the chord was
   //    before it was activated by release
   old_chord=chord;
-
+  
 }
 
 
